@@ -22,11 +22,23 @@ puebo_dep = clean_up('ProyectoFinal/pueblo_departamental.xlsx')
 tec_dep = clean_up('ProyectoFinal/tecnologia_departamental.xlsx')
 viv_dep = clean_up('ProyectoFinal/vivienda_departamental.xlsx')
 
+#### ---------------------------- Make all as.numeric ------------------ #####
+
+##Deptos 
+car_dep[3:ncol(car_dep)] <- lapply(car_dep[3:ncol(car_dep)], as.numeric)
+edu_dep[3:ncol(edu_dep)] <- lapply(edu_dep[3:ncol(edu_dep)], as.numeric)
+emp_dep[3:ncol(emp_dep)] <- lapply(emp_dep[3:ncol(emp_dep)], as.numeric)
+hogar_dep[3:ncol(hogar_dep)] <- lapply(hogar_dep[3:ncol(hogar_dep)], as.numeric)
+poblacion_dep[3:ncol(poblacion_dep)] <- lapply(poblacion_dep[3:ncol(poblacion_dep)], as.numeric)
+puebo_dep[3:ncol(puebo_dep)] <- lapply(puebo_dep[3:ncol(puebo_dep)], as.numeric)
+tec_dep[3:ncol(tec_dep)] <- lapply(tec_dep[3:ncol(tec_dep)], as.numeric)
+viv_dep[3:ncol(viv_dep)] <- lapply(viv_dep[3:ncol(viv_dep)], as.numeric)
+
 
 melting <- function(old_frame, col_range, col_names, var_name, val_name) {
   new_frame = old_frame[c(1,2,col_range)]
   colnames(new_frame) <- col_names
-  new_frame = melt(new_frame, id.vars=c('Codigo', 'Departamento'), variable.name = var_name, value.name = val_name)
+  #new_frame = melt(new_frame, id.vars=c('Codigo', 'Departamento'), variable.name = var_name, value.name = val_name)
   new_frame <- new_frame[-c(1)]
   return (new_frame)
 }
@@ -37,20 +49,21 @@ new_melt <- function(old_frame, col_range, col_names, var_name, val_name) {
   return (new_frame)
 }
 #Bloque de funciones aplicadas a caracteristicas_departamento
-cardep_lugar_nacimiento = melting(car_dep, 3:7, c('Codigo', 'Departamento', 'Mismo', 'Otro', 'Otro_pais', 'ND'), 'lugar_nacimiento', 'frecuencia_nac')
-cardep_lugar_residencia = melting(car_dep, 8:12, c('Codigo', 'Departamento', 'No_Nacido', 'Mismo', 'Otro', 'Otro_pais', 'ND'), 'lugar_residencia_2013', 'frecuencia_res')
-cardep_dificultad_ver = melting(car_dep, 14:31, c('Codigo', 'Departamento', 'Sin', 'Con', 'ND'), 'dificultad_ver', 'frecuencia_ver')
-cardep_dificultad_oir = melting(car_dep, 17:19, c('Codigo', 'Departamento', 'Sin', 'Con', 'ND'), 'dificultad_oir', 'frecuencia_oir')
-cardep_dificultad_caminar = melting(car_dep, 20:22, c('Codigo', 'Departamento', 'Sin', 'Con', 'ND'), 'dificultad_caminar', 'frecuencia_caminar')
-cardep_dificultad_recordar = melting(car_dep, 23:25, c('Codigo', 'Departamento', 'Sin', 'Con', 'ND'), 'dificultad_recordar','frecuencia_recordar')
-cardep_dificultad_personal = melting(car_dep, 26:28, c('Codigo', 'Departamento', 'Sin', 'Con', 'ND'), 'dificultad_personal', 'frecuencia_personal')
-cardep_dificultad_comunicarse = melting(car_dep, 29:31, c('Codigo', 'Departamento', 'Sin', 'Con', 'ND'), 'dificultad_comunicarse', 'frecuencia_comunicarse')
-cardep_mujeres_hijos_15_nacidos = melting(car_dep, 33:39, c('Codigo', 'Departamento', '0_hijo','1_hijo','2_hijo','3_hijo','4_hijo', '5_omas', 'ND'), 'mujeres_hijos_nacidos', 'frecuencia_hijos')
-cardep_mujeres_hijos_15_sobre = melting(car_dep, 40:45, c('Codigo', 'Departamento', '0_hijo','1_hijo','2_hijo','3_hijo','4_hijo', '5_omas'), 'mujeres_hijos_sobrevivientes', 'frecuencia_hijos')
+cardep_lugar_nacimiento = melting(car_dep, 4:7, c('Codigo', 'Departamento', 'Nacimiento_Mismo', 'Nacimiento_Otro', 'Nacimiento_Otro_pais', 'Nacimiento_ND'), 'lugar_nacimiento', 'frecuencia_nac')
+cardep_lugar_residencia = melting(car_dep, 8:12, c('Codigo', 'Departamento', 'Residencia_No_Nacido', 'Residencia_Mismo', 'Residencia_Otro', 'Residencia_Otro_pais', 'Residencia_ND'), 'lugar_residencia_2013', 'frecuencia_res')
+cardep_dificultad_ver = melting(car_dep, 14:16, c('Codigo', 'Departamento', 'Sin_Ver', 'Con_Ver', 'Ver_ND'), 'dificultad_ver', 'frecuencia_ver')
+cardep_dificultad_oir = melting(car_dep, 17:19, c('Codigo', 'Departamento', 'Sin_Oir', 'Con_Oir', 'Oir_ND'), 'dificultad_oir', 'frecuencia_oir')
+cardep_dificultad_caminar = melting(car_dep, 20:22, c('Codigo', 'Departamento', 'Sin_Caminar', 'Con_Caminar', 'Caminar_ND'), 'dificultad_caminar', 'frecuencia_caminar')
+cardep_dificultad_recordar = melting(car_dep, 23:25, c('Codigo', 'Departamento', 'Sin_Recordar', 'Con_Recordar', 'Recordar_ND'), 'dificultad_recordar','frecuencia_recordar')
+cardep_dificultad_personal = melting(car_dep, 26:28, c('Codigo', 'Departamento', 'Sin_Cuidado_Personal', 'Con_Cuidado_Personal', 'Cuidado_Personal_ND'), 'dificultad_personal', 'frecuencia_personal')
+cardep_dificultad_comunicarse = melting(car_dep, 29:31, c('Codigo', 'Departamento', 'Sin_Comunicarse', 'Con_Comunicarse', 'Comunicarse_ND'), 'dificultad_comunicarse', 'frecuencia_comunicarse')
+cardep_mujeres_hijos_15_nacidos = melting(car_dep, 33:39, c('Codigo', 'Departamento', '0_hijo_Nacidos','1_hijo_Nacidos','2_hijo_Nacidos','3_hijo_Nacidos','4_hijo_Nacidos', '5_omas_Nacidos', 'Nacidos_ND'), 'mujeres_hijos_nacidos', 'frecuencia_hijos')
+cardep_mujeres_hijos_15_sobre = melting(car_dep, 40:45, c('Codigo', 'Departamento', '0_hijo_Sobreviviente','1_hijo_Sobreviviente','2_hijo_Sobreviviente','3_hijo_Sobreviviente','4_hijo_Sobreviviente', '5_omas_Sobreviviente'), 'mujeres_hijos_sobrevivientes', 'frecuencia_hijos')
 test = melting(car_dep, 14:31, c('Codigo','Departamento', 'sin_ver', 'con_ver', 'NA_ver', 'sin_oir', 'con_oir', 'NA_oir', 'sin_caminar', 'con_caminar', 'NA_caminar', 'sin_recordar', 'con_recordar', 'NA_recordar', 'sin_personal', 'con_personal', 'NA_personal', 'sin_comunicarse', 'con_comunicarse', 'NA_comunicarse'), 'test', 'another')
 test1 = melt(test, id.vars = 'Departamento')
 aggregate(test1,by=list(test1$Departamento), FUN=mean)
-test <- sapply(test[2:], as.numeric)
+#test <- sapply(test[2:], as.numeric)
+test[2:19] <- lapply(test[2:19], as.numeric)
 #Bloque de funciones aplicadas a educacion_departamento
 
 eddep_nivel_educativo = melting(edu_dep, 3:11, c('Codigo', 'Departamento', 'Ninguno', 'Preprimaria', 'Primaria_1_3', 'Primaria_4_5', 'Primaria_6', 'Basico', 'Diversificado', 'Licenciatura', 'Maestria_doctorado'), 'Nivel_Educacion', 'frecuencia_educacion')
@@ -106,6 +119,18 @@ poblacion_mun = clean_up('ProyectoFinal/poblacion_municipal.xlsx')
 tec_mun = clean_up('ProyectoFinal/tecnologia_municipal.xlsx')
 viv_mun = clean_up('ProyectoFinal/vivienda_municipal.xlsx')
 
+#### ---------------------------- Make all as.numeric ------------------ #####
+
+##Municipios
+car_mun[3:ncol(car_mun)] <- lapply(car_mun[3:ncol(car_mun)], as.numeric)
+edu_mun[3:ncol(edu_mun)] <- lapply(edu_mun[3:ncol(edu_mun)], as.numeric)
+emp_mun[3:ncol(emp_mun)] <- lapply(emp_mun[3:ncol(emp_mun)], as.numeric)
+hogar_mun[3:ncol(hogar_mun)] <- lapply(hogar_mun[3:ncol(hogar_mun)], as.numeric)
+poblacion_mun[3:ncol(poblacion_mun)] <- lapply(poblacion_mun[3:ncol(poblacion_mun)], as.numeric)
+#puebo_mun = clean_up('ProyectoFinal/pueblo_municipal.xlsx')
+tec_mun[3:ncol(tec_mun)] <- lapply(tec_mun[3:ncol(tec_mun)], as.numeric)
+viv_mun[3:ncol(viv_mun)] <- lapply(viv_mun[3:ncol(viv_mun)], as.numeric)
+
 melting <- function(old_frame, col_range, col_names, var_name, val_name) {
   new_frame = old_frame[c(1,2,col_range)]
   colnames(new_frame) <- col_names
@@ -157,3 +182,27 @@ vivmun_tipo_oc = melting(viv_mun, 13:16, c('Codigo', 'Municipio', 'Ocupada', 'Te
 vivmun_pared = melting(viv_mun, 17:27, c('Codigo', 'Municipio', 'Ladrillo','Block','Concreto','Adobe','Madera','Lamina','Bajareque','Palo','Material_desecho', 'Otro', 'ND'), 'Material', 'frecuencia_material')
 vivmun_techo = melting(viv_mun, 28:35, c('Codigo', 'Municipio', 'Concreto','Lamina','Asbesto','Teja','Paja','Desecho','Otro','ND'), 'Material', 'frecuencia_material')
 vivmun_piso = melting(viv_mun, 36:43, c('Codigo', 'Municipio', 'Ladrillo_ceramico','Ladrillo_cemento','Ladrillo_barro','Cemento','Vinil','Madera','Tierra','Otro'), 'Material', 'frecuencia_material')
+
+
+
+skim(car_dep)
+plot_correlation(na.omit(viv_dep), maxcat = 20L)
+
+plot_boxplot(car_dep, by = "Departamento")
+
+
+create_report(new_car_dep)
+
+
+
+####------------ Test de Merge -----------------####
+new_car_dep <- merge(cardep_lugar_nacimiento,cardep_lugar_residencia,by="Departamento")
+new_car_dep <- merge(new_car_dep,cardep_dificultad_ver,by="Departamento")
+new_car_dep <- merge(new_car_dep,cardep_dificultad_oir,by="Departamento")
+new_car_dep <- merge(new_car_dep,cardep_dificultad_caminar,by="Departamento")
+new_car_dep <- merge(new_car_dep,cardep_dificultad_recordar,by="Departamento")
+new_car_dep <- merge(new_car_dep,cardep_dificultad_personal,by="Departamento")
+new_car_dep <- merge(new_car_dep,cardep_dificultad_comunicarse,by="Departamento")
+new_car_dep <- merge(new_car_dep,cardep_mujeres_hijos_15_nacidos,by="Departamento")
+new_car_dep <- merge(new_car_dep,cardep_mujeres_hijos_15_sobre,by="Departamento")
+
