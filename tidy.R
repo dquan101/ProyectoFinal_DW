@@ -2,6 +2,8 @@ library(dplyr)
 library(tidyverse)
 library(readxl)
 library(reshape2)
+library(DataExplorer)
+library(skimr)
 
 clean_up <- function(file) {
   df_name = read_xlsx(file)
@@ -20,18 +22,18 @@ puebo_dep = clean_up('ProyectoFinal/pueblo_departamental.xlsx')
 tec_dep = clean_up('ProyectoFinal/tecnologia_departamental.xlsx')
 viv_dep = clean_up('ProyectoFinal/vivienda_departamental.xlsx')
 
-
+create_report(cardep_lugar_nacimiento)
 melting <- function(old_frame, col_range, col_names, var_name, val_name) {
   new_frame = old_frame[c(1,2,col_range)]
   colnames(new_frame) <- col_names
-  new_frame = melt(new_frame, id.vars=c('Codigo', 'Departamento'), variable.name = var_name, value.name = val_name)
+  #new_frame = melt(new_frame, id.vars=c('Codigo', 'Departamento'), variable.name = var_name, value.name = val_name)
+  new_frame <- new_frame[-c(1)]
   return (new_frame)
 }
-
 #Bloque de funciones aplicadas a caracteristicas_departamento
 cardep_lugar_nacimiento = melting(car_dep, 3:7, c('Codigo', 'Departamento', 'Mismo', 'Otro', 'Otro_pais', 'ND'), 'lugar_nacimiento', 'frecuencia_nac')
 cardep_lugar_residencia = melting(car_dep, 8:12, c('Codigo', 'Departamento', 'No_Nacido', 'Mismo', 'Otro', 'Otro_pais', 'ND'), 'lugar_residencia_2013', 'frecuencia_res')
-cardep_dificultad_ver = melting(car_dep, 14:16, c('Codigo', 'Departamento', 'Sin', 'Con', 'ND'), 'dificultad_ver', 'frecuencia_ver')
+cardep_dificultad_ver = melting(car_dep, 14:31, c('Codigo', 'Departamento', 'Sin', 'Con', 'ND'), 'dificultad_ver', 'frecuencia_ver')
 cardep_dificultad_oir = melting(car_dep, 17:19, c('Codigo', 'Departamento', 'Sin', 'Con', 'ND'), 'dificultad_oir', 'frecuencia_oir')
 cardep_dificultad_caminar = melting(car_dep, 20:22, c('Codigo', 'Departamento', 'Sin', 'Con', 'ND'), 'dificultad_caminar', 'frecuencia_caminar')
 cardep_dificultad_recordar = melting(car_dep, 23:25, c('Codigo', 'Departamento', 'Sin', 'Con', 'ND'), 'dificultad_recordar','frecuencia_recordar')
@@ -39,6 +41,7 @@ cardep_dificultad_personal = melting(car_dep, 26:28, c('Codigo', 'Departamento',
 cardep_dificultad_comunicarse = melting(car_dep, 29:31, c('Codigo', 'Departamento', 'Sin', 'Con', 'ND'), 'dificultad_comunicarse', 'frecuencia_comunicarse')
 cardep_mujeres_hijos_15_nacidos = melting(car_dep, 33:39, c('Codigo', 'Departamento', '0_hijo','1_hijo','2_hijo','3_hijo','4_hijo', '5_omas', 'ND'), 'mujeres_hijos_nacidos', 'frecuencia_hijos')
 cardep_mujeres_hijos_15_sobre = melting(car_dep, 40:45, c('Codigo', 'Departamento', '0_hijo','1_hijo','2_hijo','3_hijo','4_hijo', '5_omas'), 'mujeres_hijos_sobrevivientes', 'frecuencia_hijos')
+test = melting(car_dep, 14:31, c('Codigo','Departamento', 'sin_ver', 'con_ver', 'NA_ver', 'sin_oir', 'con_oir', 'NA_oir', 'sin_caminar', 'con_caminar', 'NA_caminar', 'sin_recordar', 'con_recordar', 'NA_recordar', 'sin_personal', 'con_personal', 'NA_personal', 'sin_comunicarse', 'con_comunicarse', 'NA_comunicarse'), 'test', 'another')
 
 #Bloque de funciones aplicadas a educacion_departamento
 
@@ -79,6 +82,10 @@ vivdep_tipo_oc = melting(viv_dep, 13:16, c('Codigo', 'Departamento', 'Ocupada', 
 vivdep_pared = melting(viv_dep, 17:27, c('Codigo', 'Departamento', 'Ladrillo','Block','Concreto','Adobe','Madera','Lamina','Bajareque','Palo','Material_desecho', 'Otro', 'ND'), 'Material', 'frecuencia_material')
 vivdep_techo = melting(viv_dep, 28:35, c('Codigo', 'Departamento', 'Concreto','Lamina','Asbesto','Teja','Paja','Desecho','Otro','ND'), 'Material', 'frecuencia_material')
 vivdep_piso = melting(viv_dep, 36:43, c('Codigo', 'Departamento', 'Ladrillo_ceramico','Ladrillo_cemento','Ladrillo_barro','Cemento','Vinil','Madera','Tierra','Otro'), 'Material', 'frecuencia_material')
+
+test<-merge(cardep_dificultad_oir, cardep_dificultad_ver, by="Departamento")
+test<-merge(test, cardep_dificultad_caminar, by='Departamento')
+
 
 
 ####---------------- Municipios -----------------------####
