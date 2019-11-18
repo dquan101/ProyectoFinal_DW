@@ -22,11 +22,17 @@ puebo_dep = clean_up('ProyectoFinal/pueblo_departamental.xlsx')
 tec_dep = clean_up('ProyectoFinal/tecnologia_departamental.xlsx')
 viv_dep = clean_up('ProyectoFinal/vivienda_departamental.xlsx')
 
-create_report(cardep_lugar_nacimiento)
+
 melting <- function(old_frame, col_range, col_names, var_name, val_name) {
   new_frame = old_frame[c(1,2,col_range)]
   colnames(new_frame) <- col_names
-  #new_frame = melt(new_frame, id.vars=c('Codigo', 'Departamento'), variable.name = var_name, value.name = val_name)
+  new_frame = melt(new_frame, id.vars=c('Codigo', 'Departamento'), variable.name = var_name, value.name = val_name)
+  new_frame <- new_frame[-c(1)]
+  return (new_frame)
+}
+new_melt <- function(old_frame, col_range, col_names, var_name, val_name) {
+  new_frame = old_frame[c(1,2,col_range)]
+  colnames(new_frame) <- col_names
   new_frame <- new_frame[-c(1)]
   return (new_frame)
 }
@@ -42,7 +48,9 @@ cardep_dificultad_comunicarse = melting(car_dep, 29:31, c('Codigo', 'Departament
 cardep_mujeres_hijos_15_nacidos = melting(car_dep, 33:39, c('Codigo', 'Departamento', '0_hijo','1_hijo','2_hijo','3_hijo','4_hijo', '5_omas', 'ND'), 'mujeres_hijos_nacidos', 'frecuencia_hijos')
 cardep_mujeres_hijos_15_sobre = melting(car_dep, 40:45, c('Codigo', 'Departamento', '0_hijo','1_hijo','2_hijo','3_hijo','4_hijo', '5_omas'), 'mujeres_hijos_sobrevivientes', 'frecuencia_hijos')
 test = melting(car_dep, 14:31, c('Codigo','Departamento', 'sin_ver', 'con_ver', 'NA_ver', 'sin_oir', 'con_oir', 'NA_oir', 'sin_caminar', 'con_caminar', 'NA_caminar', 'sin_recordar', 'con_recordar', 'NA_recordar', 'sin_personal', 'con_personal', 'NA_personal', 'sin_comunicarse', 'con_comunicarse', 'NA_comunicarse'), 'test', 'another')
-
+test1 = melt(test, id.vars = 'Departamento')
+aggregate(test1,by=list(test1$Departamento), FUN=mean)
+test <- sapply(test[2:], as.numeric)
 #Bloque de funciones aplicadas a educacion_departamento
 
 eddep_nivel_educativo = melting(edu_dep, 3:11, c('Codigo', 'Departamento', 'Ninguno', 'Preprimaria', 'Primaria_1_3', 'Primaria_4_5', 'Primaria_6', 'Basico', 'Diversificado', 'Licenciatura', 'Maestria_doctorado'), 'Nivel_Educacion', 'frecuencia_educacion')
