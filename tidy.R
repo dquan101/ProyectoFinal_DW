@@ -4,6 +4,7 @@ library(readxl)
 library(reshape2)
 library(DataExplorer)
 library(skimr)
+library(plotly)
 
 clean_up <- function(file) {
   df_name = read_xlsx(file)
@@ -79,19 +80,43 @@ mujeres_c_hijos <- aggregate(cardep_mujeres_hijos_15_nacidos$frecuencia_hijos, b
 mujeres_c_hijos$total_mujeres_fertiles <- car_dep$`Total de mujeres en edad fértil`
 mujeres_c_hijos <- mujeres_c_hijos %>% rename(mujeres_hij_nacidos = x)
 
+muj <- plot_ly(mujeres_c_hijos, x = ~mujeres_hij_nacidos, y = ~total_mujeres_fertiles, text = ~Departamento, type = 'scatter', mode = 'markers', size=~total_mujeres_fertiles, color = ~Departamento, colors = 'Paired',
+               marker = list(opacity = 0.5, sizemode = 'diameter')) %>%
+  layout(title = 'Relacion de mujeres fertiles con mujeres con hijos',
+         xaxis = list(showgrid = FALSE),
+         yaxis = list(showgrid = FALSE),
+         showlegend = FALSE)
+muj
+muj_link <- api_create(muj, filename='mujeres')
+muj_link
+
 #Dificultades totales promedio
-dificultades = new_melt(car_dep, 14:31, c('Codigo','Departamento', 'sin_ver', 'con_ver', 'NA_ver', 'sin_oir', 'con_oir', 'NA_oir', 'sin_caminar', 'con_caminar', 'NA_caminar', 'sin_recordar', 'con_recordar', 'NA_recordar', 'sin_personal', 'con_personal', 'NA_personal', 'sin_comunicarse', 'con_comunicarse', 'NA_comunicarse'), 'test', 'another')
-dificultades = melt(dificultades, id.vars = 'Departamento', variable.name = 'Dificultades', value.name = 'Frecuencia')
 freq_diff_prom <- aggregate(Frecuencia~Departamento,dificultades, FUN=mean)
 freq_diff_sum <- aggregate(Frecuencia~Departamento, dificultades, FUN=sum)
 tipo_diff_prom <- aggregate(Frecuencia~Dificultades, dificultades, FUN=mean)
 tipo_diff_sum <- aggregate(Frecuencia~Dificultades, dificultades, FUN=sum)
-tipo_diff_prom <- remove_rows(tipo_diff_prom, "^NA", "^sin", tipo_diff_prom$Dificultades)
 tipo_diff_prom <- tipo_diff_prom[!grepl("^sin", tipo_diff_prom$Dificultades),]
 tipo_diff_prom <- tipo_diff_prom[!grepl("^NA", tipo_diff_prom$Dificultades),]
 tipo_diff_sum <- tipo_diff_sum[!grepl("^sin", tipo_diff_sum$Dificultades),]
 tipo_diff_sum <- tipo_diff_sum[!grepl("^NA", tipo_diff_sum$Dificultades),]
+tipo_diff_prom = na.omit(tipo_diff_prom)
 
+test <- plot_ly(tipo_diff_sum, x = ~Frecuencia, y = c('Ver','Oir','Caminar', 'Recordar', 'Personal', 'Comunicarse'), type = 'bar', orientation = 'h',
+                marker = list(color = 'rgba(239, 0, 0, 0.8)',
+                              line = list(color = 'rgba(117, 0, 0, 1.0)',
+                                          width = 3))) %>%
+  layout(title = 'Suma total de dificultades',yaxis = list(title='Dificultades'))
+test_prom <- plot_ly(tipo_diff_prom, x = ~Frecuencia, y = c('Ver','Oir','Caminar', 'Recordar', 'Personal', 'Comunicarse'), type = 'bar', orientation = 'h',
+                     marker = list(color = 'rgba(0, 239, 0, 0.8)',
+                                   line = list(color = 'rgba(0, 117, 0, 1.0)',
+                                               width = 3))) %>%
+  layout(title = 'Promedio de individuos con dificultades por dep.',yaxis = list(title='Dificultades'))
+test_prom
+test_prom_link <- api_create(test_prom, filename = 'Prom_Diff')
+test_prom_link
+test
+test_link <- api_create(test, filename='Dificultades')
+test_link
 #Alfabetismo correlacion con tecnologia
 edu_tec <- merge(eddep_alfabetismo, tecdep_celular, by="Departamento")
 edu_tec <- merge(edu_tec, tecdep_pc, by="Departamento")
@@ -105,7 +130,14 @@ edu_tec <- edu_tec[!grepl("^Usa", edu_tec$Internet),]
 edu_tec <- edu_tec[!grepl("Alfabeta", edu_tec$Educacion),]
 edu_tec <- edu_tec[c('Departamento','frecuencia_educacion', 'frecuencia_uso_cel','frecuencia_uso_pc', 'frecuencia_uso_inter')]
 colnames(edu_tec) <- c('Departamento', 'Analfabetas', 'No_Celular', 'No_Pc', 'No_Inter')
-
+ed <- plot_ly(data = edu_tec, x = ~Departamento, y= ~Analfabetas, type='bar', name='Analfabetas') %>% 
+  add_trace(y=~No_Celular, name='No usa celular') %>%
+  add_trace(y=~No_Pc, name='No usa pc') %>%
+  add_trace(y=~No_Inter, name='No usa internet') %>%
+  layout(yaxis = list(title='Frecuencia'), barmode = 'group')
+ed
+educ <- api_create(ed, filename='tecnologia')
+educ
 
 
 
@@ -126,12 +158,6 @@ hogdep_hogares = melting(hogar_dep, 3:4, c('Codigo', 'Departamento', 'Urbana', '
 hogdep_personas_hogar = melting(hogar_dep, 5:6, c('Codigo', 'Departamento', 'Hogar', 'Dormitorio'), 'Por', 'Promedio')
 
 
-jefe <- pobdep_parentesco_jefe[grepl("Jefe", pobdep_parentesco_jefe$Relacion),]
-mantenidos <- pobdep_parentesco_jefe[grepl("No_pariente", pobdep_parentesco_jefe$Relacion),]
-jefe_manuten <- jefe
-jefe$Total_poblacion <- poblacion_dep$`Total de personas`
-jefe_manuten <- merge(jefe_manuten, mantenidos, by="Departamento")
-
 
 
 
@@ -143,6 +169,17 @@ pobdep_edad_esp = melting(poblacion_dep, 10:31, c('Codigo', 'Departamento', '0-4
 pobdep_parentesco_jefe = melting(poblacion_dep, 34:44, c('Codigo', 'Departamento', 'Jefe', 'Pareja', 'Hijo/a', 'Nuera-Yerno', 'Nietos', 'Hermanos', 'Padres', 'Suegros', 'Cuniado', 'Otro', 'No_pariente'), 'Relacion', 'frecuencia_relacion')
 pobdep_estado_civil = melting(poblacion_dep, 47:52, c('Codigo', 'Departamento', 'Soltero', 'Unido', 'Casado', 'Separado', 'Divorviado', 'Viudo'), 'Estado_Civil', 'frecuencia_civil')
 
+jefe <- pobdep_parentesco_jefe[grepl("Jefe", pobdep_parentesco_jefe$Relacion),]
+mantenidos <- pobdep_parentesco_jefe[grepl("No_pariente", pobdep_parentesco_jefe$Relacion),]
+jefe_manuten <- jefe
+jefe$Total_poblacion <- poblacion_dep$`Total de personas`
+jefe_manuten <- merge(jefe_manuten, mantenidos, by="Departamento")
+jefe_manuten <- jefe_manuten[c('Departamento','frecuencia_relacion.x', 'frecuencia_relacion.y')]
+colnames(jefe_manuten) <- c('Departamento', 'Jefes', 'Inquilino_sin_relacion')
+jmdep <- plot_ly(data=jefe_manuten, x=~Departamento, y=~Inquilino_sin_relacion)
+jmdep
+inquilinos = api_create(jmdep, filename="inquilinos")
+inquilinos
 #Bloque de funciones aplicadas a pueblo_departamental
 puebdep_pertenencia = melting(puebo_dep, 4:9, c('Codigo', 'Departamento', 'Maya', 'Garifuna', 'Xinka', 'Afro', 'Ladino', 'Extranjero'), 'Pueblo', 'frecuencia_pueblo')
 puebdep_lengua = melting(puebo_dep, 10:31, c('Codigo', 'Departamento', 'Lengua_Achi', 'Lengua_Akateka', 'Lengua_Awakateka', 'Lengua_Chorti', 'Lengua_Chalchiteka', 'Lengua_Chuj', 'Lengua_Itza', 'Lengua_Ixil', 'Lengua_Popti', 'Lengua_Kiche', 'Lengua_Kaqchiquel', 'Lengua_Mam', 'Lengua_Mopan', 'Lengua_Poqomam', 'Lengua_Poqomchi', 'Lengua_Qanjobal', 'Lengua_Qeqchi', 'Lengua_Sakapulteka', 'Lengua_Sipakapense', 'Lengua_Tektiteka', 'Lengua_Tzutujil', 'Lengua_Uspanteka'), 'Lengua', 'frecuencia_lengua')
@@ -170,7 +207,16 @@ viv_ed_dep <- viv_ed_dep[!grepl("Otro", viv_ed_dep$Tipo),]
 viv_ed_dep <- viv_ed_dep[c("Departamento", "frecuencia_educacion", "Tipo", "frecuencia_tipo")]
 colnames(viv_ed_dep) <- c("Departamento", "Analfabetas","Tipo_Vivienda", "frecuencia")
 
+vivdep <- plot_ly(viv_ed_dep, x = ~Analfabetas, y = ~frecuencia, text = ~Tipo_Vivienda, type = 'scatter', mode = 'markers', size=~frecuencia, color = ~Departamento, colors = 'Paired',
+                  marker = list(opacity = 0.5, sizemode = 'diameter')) %>%
+  layout(title = 'Relacion de tipos de viviendas con analfabetismo',
+         xaxis = list(showgrid = FALSE),
+         yaxis = list(showgrid = FALSE),
+         showlegend = FALSE)
 
+vivdep
+viviendas = api_create(vivdep, filename="viviendas")
+viviendas
 
 
 test<-merge(cardep_dificultad_oir, cardep_dificultad_ver, by="Departamento")
