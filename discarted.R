@@ -1,0 +1,5 @@
+cardep_dificultad_ver = melting(car_dep, 14:16, c('Codigo', 'Departamento', 'Sin_Ver', 'Con_Ver', 'Ver_ND'), 'dificultad_ver', 'frecuencia_ver')
+cardep_dificultad_oir = melting(car_dep, 17:19, c('Codigo', 'Departamento', 'Sin_Oir', 'Con_Oir', 'Oir_ND'), 'dificultad_oir', 'frecuencia_oir')
+cardep_dificultad_caminar = melting(car_dep, 20:22, c('Codigo', 'Departamento', 'Sin_Caminar', 'Con_Caminar', 'Caminar_ND'), 'dificultad_caminar', 'frecuencia_caminar')
+cardep_dificultad_recordar = melting(car_dep, 23:25, c('Codigo', 'Departamento', 'Sin_Recordar', 'Con_Recordar', 'Recordar_ND'), 'dificultad_recordar','frecuencia_recordar')
+cardep_dificultad_personal = melting(car_dep, 26:28, c('Codigo', 'Departamento', 'Sin_Cuidado_Personal', 'Con_Cuidado_Personal', 'Cuidado_Personal_ND'), 'dificultad_personal', 'frecuencia_personal')
