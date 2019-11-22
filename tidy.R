@@ -39,7 +39,7 @@ viv_dep[3:ncol(viv_dep)] <- lapply(viv_dep[3:ncol(viv_dep)], as.numeric)
 melting <- function(old_frame, col_range, col_names, var_name, val_name) {
   new_frame = old_frame[c(1,2,col_range)]
   colnames(new_frame) <- col_names
-  #new_frame = melt(new_frame, id.vars=c('Codigo', 'Departamento'), variable.name = var_name, value.name = val_name)
+  new_frame = melt(new_frame, id.vars=c('Codigo', 'Departamento'), variable.name = var_name, value.name = val_name)
   new_frame <- new_frame[-c(1)]
   return (new_frame)
 }
@@ -448,5 +448,122 @@ new_car_dep <- merge(cardep_mujeres_hijos_15_nacidos, cardep_mujeres_hijos_15_so
 create_report(new_car_dep)
 skim(new_car_dep) %>% skimr::kable()
 
+####---------------- New way to make EDA -----------------####
+new_car_dep <- merge(cardep_lugar_nacimiento,cardep_lugar_residencia,by="Departamento")
+create_report(new_car_dep)
+skim(car_dep) %>% skimr::kable()
 
+new_car_dep <- NULL
+new_car_dep <- merge(cardep_dificultad_ver, cardep_dificultad_oir, by="Departamento")
+new_car_dep <- merge(new_car_dep,cardep_dificultad_caminar,by="Departamento")
+new_car_dep <- merge(new_car_dep,cardep_dificultad_recordar,by="Departamento")
+new_car_dep <- merge(new_car_dep,cardep_dificultad_personal,by="Departamento")
+new_car_dep <- merge(new_car_dep,cardep_dificultad_comunicarse,by="Departamento")
+create_report(new_car_dep)
+skim(new_car_dep) %>% skimr::kable()
+
+new_car_dep <- NULL
+new_car_dep <- merge(cardep_mujeres_hijos_15_nacidos, cardep_mujeres_hijos_15_sobre, by="Departamento")
+create_report(new_car_dep)
+skim(new_car_dep) %>% skimr::kable()
+
+
+#new_edu_dep <- merge(eddep_nivel_educativo, eddep_causa_inasistencia, by="Departamento")
+create_report(eddep_nivel_educativo)
+skim(eddep_nivel_educativo) %>% skimr::kable()
+
+create_report(eddep_causa_inasistencia)
+skim(eddep_causa_inasistencia) %>% skimr::kable()
+
+new_edu_dep <- NULL
+new_edu_dep <- merge(eddep_alfabetismo, eddep_asistencia, by="Departamento")
+new_edu_dep <- merge(new_edu_dep, eddep_lugar_estudio, by="Departamento")
+create_report(new_edu_dep)
+skim(new_edu_dep) %>% skimr::kable()
+
+
+
+create_report(emp_dep)
+skim(emp_dep) %>% skimr::kable()
+
+
+
+create_report(hogar_dep)
+skim(hogar_dep) %>% skimr::kable()
+
+
+pobdep_sexo_dep = melting(poblacion_dep, 4:5, c('Codigo', 'Departamento', 'Hombre', 'Mujer'), 'Sexo', 'frecuencia_sexo')
+pobdep_edad_general = melting(poblacion_dep, 6:10, c('Codigo', 'Departamento', '0-14', '15-29', '30-64', '65-84', '85+'), 'Edad', 'frecuencia_edad')
+pobdep_edad_esp = melting(poblacion_dep, 10:31, c('Codigo', 'Departamento', '0-4', '5-9', '10-14', '15-19', '20-24', '25-29', '30-34', '35-39', '40-44', '45-49', '50-54', '55-59', '60-64','65-69', '70-74', '75-79', '80-84', '85-89', '90-94','95-99', '100+'), 'Edad', 'frecuencia_edad')
+pobdep_parentesco_jefe = melting(poblacion_dep, 34:44, c('Codigo', 'Departamento', 'Jefe', 'Pareja', 'Hijo/a', 'Nuera-Yerno', 'Nietos', 'Hermanos', 'Padres', 'Suegros', 'Cuniado', 'Otro', 'No_pariente'), 'Relacion', 'frecuencia_relacion')
+pobdep_estado_civil = melting(poblacion_dep, 47:52, c('Codigo', 'Departamento', 'Soltero', 'Unido', 'Casado', 'Separado', 'Divorviado', 'Viudo'), 'Estado_Civil', 'frecuencia_civil')
+
+
+new_pob_dep <- merge(pobdep_sexo_dep, pobdep_edad_general, by="Departamento")
+create_report(new_pob_dep)
+skim(new_pob_dep) %>% skimr::kable()
+
+
+create_report(pobdep_parentesco_jefe)
+skim(pobdep_parentesco_jefe) %>% skimr::kable()
+
+
+create_report(pobdep_estado_civil)
+skim(pobdep_estado_civil) %>% skimr::kable()
+
+
+
+create_report(puebdep_pertenencia)
+skim(puebdep_pertenencia) %>% skimr::kable()
+
+
+puebdep_lengua = melting(puebo_dep, 10:31, c('Codigo', 'Departamento', 'Achi', 'Akateka', 'Awakateka', 'Chorti', 'Chalchiteka', 'Chuj', 'Itza', 'Ixil', 'Popti', 'Kiche', 'Kaqchiquel', 'Mam', 'Mopan', 'Poqomam', 'Poqomchi', 'Qanjobal', 'Qeqchi', 'Sakapulteka', 'Sipakapense', 'Tektiteka', 'Tzutujil', 'Uspanteka'), 'Lengua', 'frecuencia_lengua')
+create_report(puebdep_lengua)
+skim(puebdep_lengua) %>% skimr::kable()
+
+puebdep_lengua_aprendido = melting(puebo_dep, 32:54, c('Codigo', 'Departamento', 'Achi', 'Akateka', 'Awakateka', 'Chorti', 'Chalchiteka', 'Chuj', 'Itza', 'Ixil', 'Popti', 'Kiche', 'Kaqchiquel', 'Mam', 'Mopan', 'Poqomam', 'Poqomchi', 'Qanjobal', 'Qeqchi', 'Sakapulteka', 'Sipakapense', 'Tektiteka', 'Tzutujil', 'Uspanteka', 'No_habla'), 'Aprendio_lengua', 'frecuencia_lengua')
+create_report(puebdep_lengua_aprendido)
+skim(puebdep_lengua_aprendido) %>% skimr::kable()
+
+
+
+
+new_tec_dep <- merge(tecdep_celular, tecdep_pc, by="Departamento")
+new_tec_dep <- merge(new_tec_dep, tecdep_internet, by="Departamento")
+create_report(new_tec_dep)
+skim(new_tec_dep) %>% skimr::kable()
+
+
+
+
+new_viv_dep <- NULL
+new_viv_dep <- merge(vivdep_tipo, vivdep_tipo_oc, by="Departamento")
+create_report(new_viv_dep)
+skim(new_viv_dep) %>% skimr::kable()
+
+create_report(vivdep_pared)
+skim(vivdep_pared) %>% skimr::kable()
+
+create_report(vivdep_techo)
+skim(vivdep_techo) %>% skimr::kable()
+
+create_report(vivdep_piso)
+skim(vivdep_piso) %>% skimr::kable()
+
+
+skim(tec_mun) %>% skimr::kable()
+#####################################
+
+
+
+
+
+############## Presentation EDA #########################
+people_house_materials <- merge(hogar_dep, vivdep_pared, by="Departamento")
+create_report(people_house_materials)
+#corrplot(people_house_materials, method = "color")
+
+
+dificultades_educacion <- merge(dificultades, eddep_nivel_educativo, by="Departamento")
+create_report(dificultades_educacion)
 
